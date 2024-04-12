@@ -5,7 +5,7 @@ import { MyIcon } from "../../components/ui/MyIcon";
 import { RootStackParams } from "../../navigation/StackNavigator";
 import { StackScreenProps } from "@react-navigation/stack";
 
-interface Props extends StackScreenProps<RootStackParams, 'LoginScreen'>{}
+interface Props extends StackScreenProps<RootStackParams, 'RegisterScreen'>{}
 
 
 export const RegisterScreen = ( { navigation }: Props ) => {
