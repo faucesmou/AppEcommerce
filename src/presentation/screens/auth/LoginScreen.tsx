@@ -1,26 +1,49 @@
 import { Layout, Text, Input, Button } from "@ui-kitten/components"
-import { useWindowDimensions } from "react-native"
+import { Alert, useWindowDimensions } from "react-native"
 import { ScrollView } from "react-native-gesture-handler"
 import { MyIcon } from "../../components/ui/MyIcon";
 import { RootStackParams } from "../../navigation/StackNavigator";
 import { StackScreenProps } from "@react-navigation/stack";
-import { API_URL, STAGE} from '@env'
+import { API_URL, STAGE } from '@env'
+import { useState } from "react";
+import { useAuthStore } from "../../store/auth/useAuthStore";
 
-interface Props extends StackScreenProps<RootStackParams, 'LoginScreen'>{}
+interface Props extends StackScreenProps<RootStackParams, 'LoginScreen'> { }
 
 
-export const LoginScreen = ( { navigation }: Props ) => {
+export const LoginScreen = ({ navigation }: Props) => {
+
+  const { login } = useAuthStore();
+
+  const [isPosting, setIsPosting] = useState(false)
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  })
 
   const { height } = useWindowDimensions();
 
- /* console.log({ apiUrl: API_URL, stage: STAGE} ) */
+  const onLogin = async () => {
+
+    if (form.email.length === 0 || form.password.length === 0) {
+      return;
+    }
+    setIsPosting(true);
+
+    const wasSuccessful = await login(form.email, form.password);
+    setIsPosting(false);
+    if (wasSuccessful) return;
+    Alert.alert('Error', 'Usuario o contraseña incorrectos');
+ }
+
+  /* console.log({ apiUrl: API_URL, stage: STAGE} ) */
 
   return (
     <Layout style={{ flex: 1 }}>
       <ScrollView style={{ marginHorizontal: 40 }}>
         <Layout style={{ paddingTop: height * 0.30 }}>
           <Text category="h1"
-          style={{ marginBottom: 20 }}
+            style={{ marginBottom: 20 }}
           > Ingresar </Text>
           <Text category="p2"> Por favor, ingrese para continuar</Text>
         </Layout>
@@ -32,17 +55,23 @@ export const LoginScreen = ( { navigation }: Props ) => {
             placeholder="correo electronico"
             keyboardType="email-address"
             autoCapitalize="none"
-            accessoryLeft={ <MyIcon name="email-outline" />}
+            value={form.email}
+            onChangeText={(email) => setForm({ ...form, email })}
+            accessoryLeft={<MyIcon name="email-outline" />}
             style={{ marginBottom: 10 }}
           />
           <Input
             placeholder="contraseña"
             autoCapitalize="none"
             secureTextEntry
-            accessoryLeft={ <MyIcon name="lock-outline" />}
+            value={form.password}
+            onChangeText={(password) => setForm({ ...form, password })}
+            accessoryLeft={<MyIcon name="lock-outline" />}
             style={{ marginBottom: 10 }}
           />
         </Layout>
+
+        {/*   <Text>{ JSON.stringify(form, null, 2)} </Text> */}
 
         {/* Espacio */}
 
@@ -52,8 +81,9 @@ export const LoginScreen = ( { navigation }: Props ) => {
 
         <Layout style={{ marginTop: 20 }}>
           <Button
-          accessoryRight={ <MyIcon name="arrow-forward-outline" white /> }
-            onPress={() => { }}
+            disabled={ isPosting }
+            accessoryRight={<MyIcon name="arrow-forward-outline" white />}
+            onPress={onLogin}
           >
             Ingresar
           </Button>
@@ -65,16 +95,16 @@ export const LoginScreen = ( { navigation }: Props ) => {
 
         <Layout style={{
           alignItems: 'flex-end',
-          flexDirection:'row',
-          justifyContent:'center'
+          flexDirection: 'row',
+          justifyContent: 'center'
         }}>
           <Text>
             ¿no tienes cuenta?
           </Text>
           <Text status="primary"
-           category="s1"
-           onPress={()=> navigation.navigate('RegisterScreen')}
-           >
+            category="s1"
+            onPress={() => navigation.navigate('RegisterScreen')}
+          >
             {' '}
             Crear cuenta{' '}
           </Text>
