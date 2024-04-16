@@ -1,12 +1,15 @@
 import { Layout, Text, Button, Icon } from '@ui-kitten/components'
 import { ViewStyle } from 'react-native';
 import { useAuthStore } from '../../store/auth/useAuthStore';
+import { getProductsBypage } from '../../../actions/products/get-products-by-page';
 
 
 export const HomeScreen = ()=> {
   const marginTopStyle: ViewStyle = { marginTop: 90 };
  
   const { logout } = useAuthStore();
+
+  getProductsBypage(0);
 
     return (
       <Layout 
