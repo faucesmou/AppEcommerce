@@ -2,7 +2,7 @@ import { Text, Icon } from '@ui-kitten/components'
 import { ViewStyle } from 'react-native';
 //import { useAuthStore } from '../../store/auth/useAuthStore';
 import { getProductsBypage } from '../../../actions/products/get-products-by-page';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, } from '@tanstack/react-query';
 import { MainLayout } from '../../layouts/MainLayout';
 import { FullScreenLoader } from '../../components/FullScreenLoader';
 import { ProductList } from '../../components/products/ProductList';
@@ -13,11 +13,19 @@ export const HomeScreen = ()=> {
  
 /*   const { logout } = useAuthStore(); */
 
-  const { isLoading, data: products = [] } = useQuery({
+
+  const { isLoading, data, fetchNextPage  } = useInfiniteQuery({
     queryKey: ['products', 'infinite'],
     staleTime: 1000 * 60 * 60, // 1hour
-    queryFn: ()=> getProductsBypage(0),
-  }) 
+    initialPageParam: 0,
+
+    queryFn: async (params)=> {
+     
+      const products = await getProductsBypage(params.pageParam);
+      return products;
+    },
+    getNextPageParam: (lastPage, allPages) => allPages.length,
+  }); 
 
 //  getProductsBypage(0);
 
@@ -31,7 +39,10 @@ export const HomeScreen = ()=> {
 
       {
         isLoading ? (<FullScreenLoader/>)
-        : <ProductList products={products}/>
+        : <ProductList 
+        products={ data?.pages.flat() ?? []}
+        fetchNextPage={ fetchNextPage } 
+        />
       }
       
   

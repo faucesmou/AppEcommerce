@@ -1,12 +1,19 @@
-import { Text, View } from 'react-native'
+import { Text } from "@ui-kitten/components"
+import { MainLayout } from "../../layouts/MainLayout"
+
 
 
 export const ProductScreen = () =>  {
+
+  //useQuery
+  //useMutation
   
     return (
-      <View>
+      <MainLayout
+      title="Product"
+      >
         <Text>ProductScreen</Text>
-      </View>
+      </MainLayout>
     )
   
 }
