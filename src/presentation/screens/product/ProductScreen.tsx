@@ -10,6 +10,7 @@ import { FadeInImage } from "../../components/ui/FadeInImage"
 import { Gender, Size } from "../../../domain/entities/product"
 import { MyIcon } from "../../components/ui/MyIcon"
 import { TextStyleProps } from "@ui-kitten/components/devsupport"
+import { Formik } from "formik"
 
 
 
@@ -37,9 +38,15 @@ if (!product){
   //useMutation
   
     return (
+      <Formik
+      initialValues={ product }
+      onSubmit={ values => console.log( values)}      
+      >
+        {
+          ({ handleChange, handleSubmit, values, errors, setFieldValue })=> (
       <MainLayout
-      title={ product.title }
-      subTitle={`Precio: ${ product.price }`}
+      title={ values.title }
+      subTitle={`Precio: ${ values.price }`}
       >
         <ScrollView style={{ flex: 1 }}>
 
@@ -47,7 +54,7 @@ if (!product){
           <Layout>
             {/* TODO: tener en consideracion cuando no hay imagenes */}
             <FlatList
-            data={ product.images}
+            data={ values.images}
             keyExtractor={ (item)=> item }
             horizontal
             showsHorizontalScrollIndicator={ false }
@@ -65,17 +72,20 @@ if (!product){
           <Layout style={{ marginHorizontal: 10 }}>
             <Input
             label="Titulo"
-            value={ product.title }
             style={{ marginVertical:5}}
+            value={ values.title }
+            onChangeText={ handleChange('title') }
             />
             <Input
             label="Slug"
-            value={ product.slug}
+            value={ values.slug}
+            onChangeText={ handleChange('slug') }
             style={{ marginVertical:5}}
             />
             <Input
             label="Descripcion"
-            value={ product.description}
+            value={ values.description}
+            onChangeText={ handleChange('description') }
             multiline
             numberOfLines={5}
             style={{ marginVertical:5}}
@@ -92,12 +102,14 @@ if (!product){
           >
           <Input
             label="Precio"
-            value={ product.price.toString()}
+            value={ values.price.toString()}
+            onChangeText={ handleChange('Price') }
             style={{ flex:1 }}
             />
           <Input
             label="Inventario"
-            value={ product.stock.toString()}
+            value={ values.stock.toString()}
+            onChangeText={ handleChange('stock') }
             style={{ flex:1 }}
             />
           </Layout>
@@ -109,14 +121,19 @@ if (!product){
           size="small"
           appearance="outline"
           >
-          
             {
               sizes.map((size)=> (
                 <Button 
+                onPress={ ()=> setFieldValue(
+                  'sizes', values.sizes.includes(size)
+                 ? values.sizes.filter( s=> size !== size) 
+                 : [...values.sizes, size ]  )}
                 key={size}
                 style={{ 
                   flex:1,
-                  backgroundColor: true ? theme[ 'color-primary-300'] : undefined 
+                  backgroundColor: values.sizes.includes(size)
+                  ? theme[ 'color-primary-300']
+                  : undefined 
                  }}
                 >{size}</Button>
               ))
@@ -134,10 +151,11 @@ if (!product){
             {
               genders.map((gender)=> (
                 <Button 
+                onPress={ ()=> setFieldValue('gender', gender)}
                 key={gender}
                 style={{ 
                   flex:1,
-                  backgroundColor: true ? theme[ 'color-primary-300'] : undefined 
+                  backgroundColor: values.gender.startsWith(gender) ? theme[ 'color-primary-300'] : undefined 
                  }}
                 >{gender}</Button>
               ))
@@ -153,7 +171,7 @@ if (!product){
             Guardar 
           </Button>
 
-          <Text> { JSON.stringify(product, null, 2) } </Text>
+          <Text> { JSON.stringify(values, null, 2) } </Text>
 
 
           <Layout style={{ height: 200}} />
@@ -161,6 +179,13 @@ if (!product){
         </ScrollView>
   
       </MainLayout>
+  
+          )
+        }
+
+     
+
+      </Formik>
     )
   
 }
