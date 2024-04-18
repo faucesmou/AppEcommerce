@@ -11,7 +11,7 @@ interface Props {
     rightAction?: () => void;
     rightActionIcon?: string;
 
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 export const MainLayout = ( {title, subTitle, rightAction, rightActionIcon, children }: Props ) => {
@@ -49,7 +49,7 @@ export const MainLayout = ( {title, subTitle, rightAction, rightActionIcon, chil
       />
       <Divider/>
 
-        <Layout style={{ height: '100%', backgroundColor: 'violet'}}>
+        <Layout style={{ height: '100%'}}>
             {children}
         </Layout>
 
